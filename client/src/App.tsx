@@ -1,11 +1,35 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
-import { Home } from "./pages/home";
+import { Home } from "./pages/Home/Home";
+import { SignIn } from "./pages/SignIn/SignIn";
+import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 
 function App() {
+  const theme = createTheme({
+    palette: {
+      mode: "dark", // or "dark"
+      primary: {
+        main: "#DEDEF7",
+      },
+      secondary: {
+        main: "#8788C7",
+      },
+    },
+    typography: {
+      fontFamily: "Roboto, Arial",
+    },
+  });
+
   return (
-    <>
-      <Home />
-    </>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />{" "}
+      <Router>
+        <Routes>
+          <Route path="/" element={<SignIn />} />
+          <Route path="/home" element={<Home />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 
