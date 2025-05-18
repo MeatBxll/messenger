@@ -7,7 +7,8 @@ import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 function App() {
   const theme = createTheme({
     palette: {
-      mode: "dark", // or "dark"
+      mode: "dark", // or "light"
+      background: { default: "#202124", paper: "#212121" },
       primary: {
         main: "#DEDEF7",
       },
@@ -25,8 +26,8 @@ function App() {
       <CssBaseline />{" "}
       <Router>
         <Routes>
-          <Route path="/" element={<SignIn />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/SignIn" element={<SignIn />} />
+          <Route path="/" element={<Home />} />
         </Routes>
       </Router>
     </ThemeProvider>

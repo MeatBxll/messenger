@@ -15,18 +15,19 @@ export const SignIn = () => {
         gap: "1rem",
         alignItems: "center",
         justifyContent: "center",
+        userSelect: "none",
       }}
     >
       <Box>
         <Button
-          onClick={() => setSignIn(!signIn)}
+          onClick={() => setSignIn(true)}
           variant={signIn ? "contained" : "outlined"}
           size="large"
         >
           Sign In
         </Button>
         <Button
-          onClick={() => setSignIn(!signIn)}
+          onClick={() => setSignIn(false)}
           variant={!signIn ? "contained" : "outlined"}
           size="large"
         >
@@ -78,7 +79,7 @@ export const SignIn = () => {
         <TextField id="standard-basic" label="Last Name" variant="standard" />
         <Button>Sign In</Button>
       </Box>
-      <Button sx={{ marginTop: "1rem" }} size="large" variant="outlined">
+      <Button sx={{ marginTop: "1rem" }} size="large" variant="contained">
         Sign In With Google
       </Button>
     </Container>
