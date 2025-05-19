@@ -1,14 +1,11 @@
 import { Box, Button, Container, Fab, TextField } from "@mui/material";
-import Collapse from "@mui/material/Collapse";
-import { useState } from "react";
 import { MdArrowForwardIos } from "react-icons/md";
 import { IoSettingsSharp } from "react-icons/io5";
 import { HiMiniGif } from "react-icons/hi2";
 import { IoMdPhotos } from "react-icons/io";
+import { FriendsTab } from "./components/FriendsTab/FriendsTab";
 
 export const Home = () => {
-  const [usersIn, setUsersIn] = useState(false);
-
   return (
     <Container
       sx={{
@@ -28,43 +25,7 @@ export const Home = () => {
             "rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            boxShadow: "7px 0px 29px 0px rgba(100, 100, 111, 0.2)",
-          }}
-        >
-          <Collapse
-            orientation="horizontal"
-            in={usersIn}
-            sx={{ display: "flex" }}
-          >
-            <Box
-              sx={{
-                backgroundColor: "#2e3031",
-                width: 200,
-                height: "100%",
-              }}
-            />
-          </Collapse>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              bgcolor: "#2e3031",
-              padding: 2,
-            }}
-          >
-            <Fab
-              sx={{ position: "absolute", transform: "translateX(-0.5rem)" }}
-              size="medium"
-              color="secondary"
-              onClick={() => setUsersIn(!usersIn)}
-            >
-              <MdArrowForwardIos />
-            </Fab>
-          </Box>
-        </Box>
+        <FriendsTab />
         <Box
           sx={{
             backgroundColor: "#606368",
