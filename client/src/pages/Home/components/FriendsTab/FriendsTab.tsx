@@ -43,6 +43,26 @@ export const FriendsTab = () => {
       name: "Beth",
       pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
     },
+    {
+      name: "Anna",
+      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
+    },
+    {
+      name: "Jen",
+      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
+    },
+    {
+      name: "Sam",
+      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
+    },
+    {
+      name: "Chris",
+      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
+    },
+    {
+      name: "Adam",
+      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
+    },
   ];
 
   return (
