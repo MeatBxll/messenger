@@ -1,4 +1,4 @@
-import { Box, Collapse, Fab } from "@mui/material";
+import { Avatar, Box, Collapse, Fab } from "@mui/material";
 import { useState } from "react";
 import { MdArrowForwardIos } from "react-icons/md";
 import { FriendCard } from "./FriendCard/FriendCard";
@@ -9,39 +9,39 @@ export const FriendsTab = () => {
   const friends = [
     {
       name: "Tim",
-      pfp: "timPfp",
+      pfp: <Avatar alt="Tim" src="/static/images/avatar/1.jpg" />,
     },
     {
       name: "Thomas",
-      pfp: "timPfp",
+      pfp: <Avatar alt="Thomas" src="/static/images/avatar/1.jpg" />,
     },
     {
       name: "Jimmy",
-      pfp: "timPfp",
+      pfp: <Avatar alt="Jimmy" src="/static/images/avatar/1.jpg" />,
     },
     {
-      name: "Jimmy",
-      pfp: "timPfp",
+      name: "Steve",
+      pfp: <Avatar alt="Steve" src="/static/images/avatar/1.jpg" />,
     },
     {
-      name: "Jimmy",
-      pfp: "timPfp",
+      name: "Frank",
+      pfp: <Avatar alt="Frank" src="/static/images/avatar/1.jpg" />,
     },
     {
-      name: "Jimmy",
-      pfp: "timPfp",
+      name: "Nick",
+      pfp: <Avatar alt="Nick" src="/static/images/avatar/1.jpg" />,
     },
     {
-      name: "Jimmy",
-      pfp: "timPfp",
+      name: "Josh",
+      pfp: <Avatar alt="Josh" src="/static/images/avatar/1.jpg" />,
     },
     {
-      name: "Jimmy",
-      pfp: "timPfp",
+      name: "Ashly",
+      pfp: <Avatar alt="Ashly" src="/static/images/avatar/1.jpg" />,
     },
     {
-      name: "Jimmy",
-      pfp: "timPfp",
+      name: "Beth",
+      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
     },
   ];
 
