@@ -7,62 +7,20 @@ import { TiPlus } from "react-icons/ti";
 export const FriendsTab = () => {
   const [usersIn, setUsersIn] = useState(false);
   const friends = [
-    {
-      name: "Tim",
-      pfp: <Avatar alt="Tim" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Thomas",
-      pfp: <Avatar alt="Thomas" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Jimmy",
-      pfp: <Avatar alt="Jimmy" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Steve",
-      pfp: <Avatar alt="Steve" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Frank",
-      pfp: <Avatar alt="Frank" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Nick",
-      pfp: <Avatar alt="Nick" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Josh",
-      pfp: <Avatar alt="Josh" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Ashly",
-      pfp: <Avatar alt="Ashly" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Beth",
-      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Anna",
-      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Jen",
-      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Sam",
-      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Chris",
-      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
-    },
-    {
-      name: "Adam",
-      pfp: <Avatar alt="Beth" src="/static/images/avatar/1.jpg" />,
-    },
+    "Tim",
+    "Thomas",
+    "Jimmy",
+    "Steve",
+    "Frank",
+    "Nick",
+    "Josh",
+    "Ashly",
+    "Beth",
+    "Anna",
+    "Jen",
+    "Sam",
+    "Chris",
+    "Adam",
   ];
 
   return (
@@ -123,7 +81,11 @@ export const FriendsTab = () => {
             }}
           >
             {friends.map((n, index) => (
-              <FriendCard key={index} pfp={n.pfp} name={n.name} />
+              <FriendCard
+                key={index}
+                pfp={<Avatar alt={n} src="/static/images/avatar/1.jpg" />}
+                name={n}
+              />
             ))}
           </Box>
           <Box
