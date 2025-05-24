@@ -6,7 +6,7 @@ import { TiPlus } from "react-icons/ti";
 
 export const FriendsTab = () => {
   const [usersIn, setUsersIn] = useState(false);
-  const friends = [
+  const [friends, setFriends] = useState([
     "Tim",
     "Thomas",
     "Jimmy",
@@ -21,7 +21,7 @@ export const FriendsTab = () => {
     "Sam",
     "Chris",
     "Adam",
-  ];
+  ]);
 
   return (
     <Box
