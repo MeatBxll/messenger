@@ -21,6 +21,8 @@ export const FriendsTab = () => {
     "Sam",
     "Chris",
     "Adam",
+    "Jean",
+    "Paul",
   ]);
 
   return (
