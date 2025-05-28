@@ -1,16 +1,15 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "mysql" // or your DB type
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  email String @db.VarChar(255)
+  id       Int    @id @default(autoincrement())
+  email    String @db.VarChar(255)
   password String @db.VarChar(255)
-  name String @db.VarChar(255) @map("name")
+  name     String @db.VarChar(255)
 }
