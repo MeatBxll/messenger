@@ -10,8 +10,3 @@ async function main() {
 main()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
-
-async function CheckUserNameAndPassword(e: string) {
-  const users = await prisma.user.findUnique();
-  console.log(users);
-}
