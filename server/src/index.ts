@@ -1,21 +1,22 @@
-import express, { Application } from "express";
-import "./prisma/prisma";
-import prismaInstance from "./prisma/prisma";
+import express from "express";
 import userRoutes from "./routes/userRoutes";
+import cors from "cors";
 
-const prisma = prismaInstance;
-const app: Application = express();
-const PORT: number = 8000;
+const app = express();
 
+//middleware
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+// app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
+//routes
 app.use("/api/users", userRoutes);
 
-app.get("/api/test", (req: any, res: any) => {
-  return res.json({
-    msg: "hello world",
-  });
+app.listen(8000, () => {
+  console.log("Server running on port 8000");
 });
-
-app.listen(PORT, () => console.log(`listening on port: ${PORT}`));
