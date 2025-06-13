@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import prismaInstance from "../prisma/prisma";
 import bcrypt from "bcrypt";
 
@@ -12,11 +12,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const createUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<Response | void> => {
+export const createUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
