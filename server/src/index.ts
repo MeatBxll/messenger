@@ -1,5 +1,6 @@
 import express from "express";
 import userRoutes from "./routes/userRoutes";
+import authRoutes from "./routes/authRoutes";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -18,6 +19,7 @@ app.use(cookieParser());
 
 //routes
 app.use("/api/users", userRoutes);
+app.use("/api/auth", authRoutes);
 
 app.listen(8000, () => {
   console.log("Server running on port 8000");
