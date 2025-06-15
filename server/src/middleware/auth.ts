@@ -1,10 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-interface JwtPayload {
-  id: number;
-}
-
 export const authenticateToken = (
   req: Request,
   res: Response,
@@ -13,17 +9,16 @@ export const authenticateToken = (
   const token = req.cookies.token;
 
   if (!token) {
-    return res.status(401).json({ message: "No token, authorization denied" });
+    return res.status(401).json({ message: "No token provided" });
   }
 
   try {
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string
-    ) as JwtPayload;
-    (req as any).userId = decoded.id;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
+      id: number;
+    };
+    req.userId = decoded.id;
     next();
   } catch (err) {
-    return res.status(403).json({ message: "Token is not valid" });
+    return res.status(403).json({ message: "Invalid token" });
   }
 };

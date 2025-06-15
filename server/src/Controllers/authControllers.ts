@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import prismaInstance from "../prisma/prisma";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -9,9 +10,12 @@ export const login = async (req: Request, res: Response) => {
     where: { email },
   });
 
-  if (!user || user.password !== password) {
-    return res.status(404).json({ message: "Invalid credentials" });
-  }
+  if (!user) return res.status(404).json({ message: "Invalid credentials" });
+
+  const passwordsMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordsMatch)
+    return res.status(401).json({ message: "Passwords Do Not Match" });
 
   const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
     expiresIn: "1h",
@@ -28,11 +32,11 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const getMe = async (req: Request, res: Response) => {
-  const userId = req.cookies.userId;
-  if (!userId) return res.status(404).json({ message: "Not authenticated" });
+  const userId = req.userId;
+  if (!userId) return res.status(401).json({ message: "Not authenticated" });
 
   const user = await prismaInstance.user.findUnique({ where: { id: userId } });
-  if (!user) return res.status(401).json({ message: "User Not Found" });
+  if (!user) return res.status(404).json({ message: "User not found" });
 
   return res.json({ user });
 };
