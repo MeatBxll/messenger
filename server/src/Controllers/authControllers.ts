@@ -3,6 +3,36 @@ import prismaInstance from "../prisma/prisma";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
+const ACCESS_TOKEN_EXPIRY = "15m";
+const REFRESH_TOKEN_EXPIRY = "7d";
+
+export const refreshToken = async (req: Request, res: Response) => {
+  const token = req.cookies.refreshToken;
+  if (!token) return res.status(401).json({ message: "No Refresh Tokens" });
+  try {
+    const decoded = jwt.verify(token, process.env.REFRESH_SECRET as string) as {
+      id: number;
+    };
+
+    const newAccessToken = jwt.sign(
+      { id: decoded.id },
+      process.env.JWT_SECRET as string,
+      { expiresIn: ACCESS_TOKEN_EXPIRY }
+    );
+
+    res.cookie("token", newAccessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 15,
+    });
+
+    return res.json({ message: "Access token refreshed" });
+  } catch (err: any) {
+    return res.status(403).json({ message: `Error : ${err}` });
+  }
+};
+
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -17,15 +47,30 @@ export const login = async (req: Request, res: Response) => {
   if (!passwordsMatch)
     return res.status(401).json({ message: "Passwords Do Not Match" });
 
-  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
-    expiresIn: "1h",
-  });
+  const accessToken = jwt.sign(
+    { id: user.id },
+    process.env.JWT_SECRET as string,
+    { expiresIn: ACCESS_TOKEN_EXPIRY }
+  );
 
-  res.cookie("token", token, {
+  const refreshToken = jwt.sign(
+    { id: user.id },
+    process.env.REFRESH_SECRET as string,
+    { expiresIn: REFRESH_TOKEN_EXPIRY }
+  );
+
+  res.cookie("token", accessToken, {
     httpOnly: true,
     secure: false,
     sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 24,
+    maxAge: 1000 * 60 * 15,
+  });
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
   });
 
   return res.json({ message: "logged in" });
