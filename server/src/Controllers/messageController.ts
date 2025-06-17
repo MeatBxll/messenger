@@ -25,3 +25,26 @@ export const createMessage = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const getMessages = async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) return res.status(401).json({ message: "Not Authenticated" });
+
+  try {
+    const messages = prismaInstance.message.findMany({
+      where: { senderId: userId },
+      include: {
+        sender: {
+          select: { id: true, name: true },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return res.json({ messages });
+  } catch (err: any) {
+    return res
+      .status(404)
+      .json({ message: "something went wrong in getting messages" });
+  }
+};
