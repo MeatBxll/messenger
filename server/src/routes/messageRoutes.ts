@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.post("/", authenticateToken, createMessage);
 router.get("/", authenticateToken, getMessages);
+router.get("/", authenticateToken);
 
 export default router;
