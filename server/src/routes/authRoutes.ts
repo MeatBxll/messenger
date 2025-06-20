@@ -4,7 +4,7 @@ import { authenticateToken } from "../middleware/auth";
 
 const router = express.Router();
 
-router.post("/login", login);
+router.post("/", login);
 router.get("/getMe", authenticateToken, getMe);
 router.post("/refresh", refreshToken);
 

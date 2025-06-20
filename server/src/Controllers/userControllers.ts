@@ -4,10 +4,17 @@ import bcrypt from "bcrypt";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
-    const users = await prismaInstance.user.findMany();
+    const users = await prismaInstance.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+
     res.json(users);
   } catch (err) {
-    console.error(err);
+    console.error("Error in getting all users", err);
     res.status(500).json({ error: "Error fetching users" });
   }
 };

@@ -8,17 +8,25 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique 
-  password String
-  messages Message[]
+  id              Int       @id @default(autoincrement())
+  name            String
+  email           String    @unique
+  password        String
+  pfpIndex        Int       @default(0)
+  sentMessages    Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+
+  friends         User[]    @relation("UserFriends")
+  friendOf        User[]    @relation("UserFriends")
 }
 
-model Message{
-  id  Int @id @default(autoincrement())
-  content String
-  createdAt DateTime @default(now())
-  senderId Int
-  sender User @relation(fields: [senderId], references: [id])
+model Message {
+  id          Int      @id @default(autoincrement())
+  content     String
+  createdAt   DateTime @default(now())
+  senderId    Int
+  recipientId Int
+
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id])
 }

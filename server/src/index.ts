@@ -19,9 +19,9 @@ app.use(express.json());
 app.use(cookieParser());
 
 //routes
-app.use("/api/users", userRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/messages", messageRoutes);
+app.use("/api/message", messageRoutes);
 
 app.listen(8000, () => {
   console.log("Server running on port 8000");
