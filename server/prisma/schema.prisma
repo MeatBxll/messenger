@@ -3,30 +3,47 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql" // or your DB type
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id              Int       @id @default(autoincrement())
-  name            String
-  email           String    @unique
-  password        String
-  pfpIndex        Int       @default(0)
-  sentMessages    Message[] @relation("SentMessages")
-  receivedMessages Message[] @relation("ReceivedMessages")
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+  pfpIndex Int
 
-  friends         User[]    @relation("UserFriends")
-  friendOf        User[]    @relation("UserFriends")
+  friends  User[] @relation("UserFriends")
+  friendOf User[] @relation("UserFriends")
+
+  sentRequests     FriendRequest[] @relation("SentRequests")
+  receivedRequests FriendRequest[] @relation("ReceivedRequests")
+
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 model Message {
-  id          Int      @id @default(autoincrement())
-  content     String
-  createdAt   DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+
   senderId    Int
   recipientId Int
 
-  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
-  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id])
+  sender    User @relation("SentMessages", fields: [senderId], references: [id])
+  recipient User @relation("ReceivedMessages", fields: [recipientId], references: [id])
+}
+
+model FriendRequest {
+  id         Int      @id @default(autoincrement())
+  sender     User     @relation("SentRequests", fields: [senderId], references: [id])
+  senderId   Int
+  receiver   User     @relation("ReceivedRequests", fields: [receiverId], references: [id])
+  receiverId Int
+  status     String   @default("pending") // "pending", "accepted", "rejected"
+  createdAt  DateTime @default(now())
+
+  @@unique([senderId, receiverId])
 }

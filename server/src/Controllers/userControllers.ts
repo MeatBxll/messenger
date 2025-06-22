@@ -43,3 +43,89 @@ export const createUser = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Error creating user" });
   }
 };
+
+export const addFriend = async (req: Request, res: Response) => {
+  const userId = req.userId;
+  const friendId = parseInt(req.params.userId);
+
+  if (isNaN(friendId) || !userId) {
+    res.status(400).json({ message: "Invalid UserId or friend Id" });
+  }
+
+  if (friendId === userId) {
+    return res.status(400).json({ message: "Cannot add yourself as a friend" });
+  }
+
+  try {
+    await prismaInstance.user.update({
+      where: { id: userId },
+      data: {
+        friends: {
+          connect: {
+            id: friendId,
+          },
+        },
+      },
+    });
+    return res.status(200).json({ message: "Friend added" });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ message: "Something went wrong when adding friend" });
+  }
+};
+
+export const getFriends = async (req: Request, res: Response) => {
+  const userId = req.userId;
+
+  if (!userId) return res.status(400).json({ message: "Invalid User Id" });
+
+  try {
+    const user = await prismaInstance.user.findUnique({
+      where: { id: userId },
+      include: {
+        friends: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            pfpIndex: true,
+          },
+        },
+      },
+    });
+
+    if (!user) res.status(404).json({ message: "User not found" });
+
+    return res.json({ friends: user!.friends });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Something went wrong in fetching friends" });
+  }
+};
+
+export const changePfp = async (req: Request, res: Response) => {
+  const userId = req.userId;
+
+  const newPfpId = parseInt(req.params.pfpIndex);
+
+  if (!userId)
+    return res.status(400).json({ message: "Authentication Required" });
+
+  if (isNaN(newPfpId) || newPfpId < 0 || newPfpId > 12)
+    return res.status(400).json({ message: "Invalid Pfp index" });
+
+  try {
+    await prismaInstance.user.update({
+      where: { id: userId },
+      data: {
+        pfpIndex: newPfpId,
+      },
+    });
+
+    return res.status(201).json({ message: "Pfp index updated" });
+  } catch (err) {
+    return res.status(500).json({ message: "Error when changing pfp" });
+  }
+};

@@ -1,9 +1,19 @@
 import express from "express";
-import { getAllUsers, createUser } from "../controllers/userControllers";
+import {
+  getAllUsers,
+  createUser,
+  addFriend,
+  getFriends,
+  changePfp,
+} from "../controllers/userControllers";
+import { authenticateToken } from "../middleware/auth";
 
 const router = express.Router();
 
 router.get("/", getAllUsers);
 router.post("/", createUser);
+router.post("/:id/add-friend", authenticateToken, addFriend);
+router.get("/friends", authenticateToken, getFriends);
+router.patch("/pfp/:pfpIndex", authenticateToken, changePfp);
 
 export default router;

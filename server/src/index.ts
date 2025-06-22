@@ -1,6 +1,7 @@
 import express from "express";
 import userRoutes from "./routes/userRoutes";
 import authRoutes from "./routes/authRoutes";
+import friendRequestRoutes from "./routes/friendRequestsRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -22,6 +23,7 @@ app.use(cookieParser());
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/friend-requests", friendRequestRoutes);
 
 app.listen(8000, () => {
   console.log("Server running on port 8000");
