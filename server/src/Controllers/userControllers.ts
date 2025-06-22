@@ -32,7 +32,12 @@ export const createUser = async (req: Request, res: Response) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prismaInstance.user.create({
-      data: { name, email, password: hashedPassword },
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        pfpIndex: 0, // default profile picture index
+      },
     });
 
     const { password: _, ...userWithoutPassword } = user;
@@ -41,37 +46,6 @@ export const createUser = async (req: Request, res: Response) => {
   } catch (err: any) {
     console.error(err);
     return res.status(500).json({ error: "Error creating user" });
-  }
-};
-
-export const addFriend = async (req: Request, res: Response) => {
-  const userId = req.userId;
-  const friendId = parseInt(req.params.userId);
-
-  if (isNaN(friendId) || !userId) {
-    res.status(400).json({ message: "Invalid UserId or friend Id" });
-  }
-
-  if (friendId === userId) {
-    return res.status(400).json({ message: "Cannot add yourself as a friend" });
-  }
-
-  try {
-    await prismaInstance.user.update({
-      where: { id: userId },
-      data: {
-        friends: {
-          connect: {
-            id: friendId,
-          },
-        },
-      },
-    });
-    return res.status(200).json({ message: "Friend added" });
-  } catch (err) {
-    return res
-      .status(500)
-      .json({ message: "Something went wrong when adding friend" });
   }
 };
 

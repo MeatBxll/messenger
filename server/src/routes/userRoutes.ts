@@ -2,7 +2,6 @@ import express from "express";
 import {
   getAllUsers,
   createUser,
-  addFriend,
   getFriends,
   changePfp,
 } from "../controllers/userControllers";
@@ -12,7 +11,6 @@ const router = express.Router();
 
 router.get("/", getAllUsers);
 router.post("/", createUser);
-router.post("/:id/add-friend", authenticateToken, addFriend);
 router.get("/friends", authenticateToken, getFriends);
 router.patch("/pfp/:pfpIndex", authenticateToken, changePfp);
 
