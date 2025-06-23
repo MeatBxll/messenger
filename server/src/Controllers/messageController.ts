@@ -102,3 +102,48 @@ export const getMessagesWithUser = async (req: Request, res: Response) => {
     res.status(401).json({ message: "Error when getting messages" });
   }
 };
+
+export const getConversations = async (req: Request, res: Response) => {
+  const userId = req.userId;
+  if (!userId) {
+    return res.status(400).json({ message: "Authorization Required" });
+  }
+
+  try {
+    const messages = await prismaInstance.message.findMany({
+      where: {
+        OR: [{ senderId: userId }, { recipientId: userId }],
+      },
+      orderBy: { createdAt: "desc" },
+      include: {
+        sender: { select: { id: true, name: true, pfpIndex: true } },
+        recipient: { select: { id: true, name: true, pfpIndex: true } },
+      },
+    });
+    const conversationsMap = new Map<number, (typeof messages)[0]>();
+
+    for (const message of messages) {
+      const otherUser =
+        message.senderId === userId ? message.recipient : message.sender;
+
+      if (!conversationsMap.has(otherUser.id)) {
+        conversationsMap.set(otherUser.id, message);
+      }
+    }
+
+    const conversations = Array.from(conversationsMap.values()).map((msg) => {
+      const otherUser = msg.senderId === userId ? msg.recipient : msg.sender;
+
+      return {
+        user: otherUser,
+        lastMessage: msg.content,
+        timestamp: msg.createdAt,
+      };
+    });
+
+    return res.json({ conversations });
+  } catch (err) {
+    console.error("Error fetching conversations:", err);
+    return res.status(500).json({ message: "Failed to fetch conversations" });
+  }
+};

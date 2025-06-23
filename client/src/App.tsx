@@ -3,6 +3,7 @@ import "./App.css";
 import { Home } from "./pages/Home/Home";
 import { SignIn } from "./pages/SignIn/SignIn";
 import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
+import { SocketProvider } from "./context/SocketContext";
 
 function App() {
   const theme = createTheme({
@@ -23,13 +24,15 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline />{" "}
-      <Router>
-        <Routes>
-          <Route path="/SignIn" element={<SignIn />} />
-          <Route path="/" element={<Home />} />
-        </Routes>
-      </Router>
+      <SocketProvider>
+        <CssBaseline />
+        <Router>
+          <Routes>
+            <Route path="/SignIn" element={<SignIn />} />
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </Router>
+      </SocketProvider>
     </ThemeProvider>
   );
 }

@@ -4,8 +4,24 @@ import { IoSettingsSharp } from "react-icons/io5";
 import { HiMiniGif } from "react-icons/hi2";
 import { IoMdPhotos } from "react-icons/io";
 import { FriendsTab } from "./components/FriendsTab/FriendsTab";
+import { useSocket } from "../../context/SocketContext";
+import { useEffect } from "react";
 
 export const Home = () => {
+  const socket = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on("connect", () => {
+      console.log("🟢 Connected to server:", socket.id);
+    });
+
+    return () => {
+      socket.off("connect");
+    };
+  }, [socket]);
+
   return (
     <Container
       sx={{

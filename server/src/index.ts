@@ -5,8 +5,13 @@ import friendRequestRoutes from "./routes/friendRequestsRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import http from "http";
+import { Server } from "socket.io";
+import { setupSocket } from "./socket";
 
 const app = express();
+const server = http.createServer(app);
+const io = setupSocket(server);
 
 //middleware
 app.use(
@@ -25,6 +30,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/message", messageRoutes);
 app.use("/api/friend-requests", friendRequestRoutes);
 
-app.listen(8000, () => {
-  console.log("Server running on port 8000");
+app.get("/", (_req, res) => {
+  res.send("Server is running 🟢");
+});
+
+server.listen(8000, () => {
+  console.log("Server listening on http://localhost:8000");
 });
