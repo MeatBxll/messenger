@@ -5,13 +5,9 @@ import friendRequestRoutes from "./routes/friendRequestsRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import http from "http";
-import { Server } from "socket.io";
-import { setupSocket } from "./socket";
+import { server } from "./socket/socket";
 
 const app = express();
-const server = http.createServer(app);
-const io = setupSocket(server);
 
 //middleware
 app.use(
