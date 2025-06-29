@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import prismaInstance from "../../prisma/prisma";
+import prismaInstance from "../prisma/prisma";
 
 export function messageHandler(socket: Socket, io: Server) {
   socket.on("send-message", async (data) => {

@@ -28,8 +28,8 @@ function App() {
         <CssBaseline />
         <Router>
           <Routes>
-            <Route path="/SignIn" element={<SignIn />} />
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<SignIn />} />
+            <Route path="/home" element={<Home />} />
           </Routes>
         </Router>
       </SocketProvider>

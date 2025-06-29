@@ -9,5 +9,10 @@
     "skipLibCheck": true,
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src", "socket/socket.ts"]
+  "include": [
+    "src",
+    "socket/socket.ts",
+    "src/socketHandlers/messageHandler.ts",
+    "src/socketHandlers/notificationHandler.ts"
+  ]
 }

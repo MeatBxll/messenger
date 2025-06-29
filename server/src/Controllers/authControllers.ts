@@ -34,46 +34,52 @@ export const refreshToken = async (req: Request, res: Response) => {
 };
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-  const user = await prismaInstance.user.findUnique({
-    where: { email },
-  });
+    const user = await prismaInstance.user.findUnique({
+      where: { email },
+    });
 
-  if (!user) return res.status(404).json({ message: "Invalid credentials" });
+    if (!user) return res.status(404).json({ message: "Invalid credentials" });
 
-  const passwordsMatch = await bcrypt.compare(password, user.password);
+    const passwordsMatch = await bcrypt.compare(password, user.password);
 
-  if (!passwordsMatch)
-    return res.status(401).json({ message: "Passwords Do Not Match" });
+    if (!passwordsMatch)
+      return res.status(401).json({ message: "Passwords Do Not Match" });
 
-  const accessToken = jwt.sign(
-    { id: user.id },
-    process.env.JWT_SECRET as string,
-    { expiresIn: ACCESS_TOKEN_EXPIRY }
-  );
+    const accessToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_SECRET as string,
+      { expiresIn: ACCESS_TOKEN_EXPIRY }
+    );
 
-  const refreshToken = jwt.sign(
-    { id: user.id },
-    process.env.REFRESH_SECRET as string,
-    { expiresIn: REFRESH_TOKEN_EXPIRY }
-  );
+    const refreshToken = jwt.sign(
+      { id: user.id },
+      process.env.REFRESH_SECRET as string,
+      { expiresIn: REFRESH_TOKEN_EXPIRY }
+    );
 
-  res.cookie("token", accessToken, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 15,
-  });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    });
 
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-  });
-
-  return res.json({ message: "logged in" });
+    return res.json({
+      message: "logged in",
+      accessToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 export const getMe = async (req: Request, res: Response) => {

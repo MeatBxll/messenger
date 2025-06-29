@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import prismaInstance from "../prisma/prisma";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export const getAllUsers = async (req: Request, res: Response) => {
   try {
@@ -25,7 +26,7 @@ export const createUser = async (req: Request, res: Response) => {
   if (!name || !email || !password) {
     return res
       .status(400)
-      .json({ error: "name email and password are all required" });
+      .json({ error: "name email and password are required" });
   }
 
   try {
@@ -36,13 +37,37 @@ export const createUser = async (req: Request, res: Response) => {
         name,
         email,
         password: hashedPassword,
-        pfpIndex: 0, // default profile picture index
+        pfpIndex: 0,
       },
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const payload = { userId: user.id };
 
-    return res.status(201).json(userWithoutPassword);
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
+      expiresIn: "15m",
+    });
+
+    const refreshToken = jwt.sign(
+      payload,
+      process.env.REFRESH_SECRET as string,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    // Set refresh token cookie (HttpOnly, Secure, etc)
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    const { password: _, ...userWithoutPassword } = user;
+    return res.status(201).json({
+      user: userWithoutPassword,
+      accessToken,
+    });
   } catch (err: any) {
     console.error(err);
     return res.status(500).json({ error: "Error creating user" });
