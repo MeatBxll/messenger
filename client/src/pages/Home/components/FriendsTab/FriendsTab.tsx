@@ -5,6 +5,7 @@ import { FriendCard } from "./FriendCard/FriendCard";
 import { TiPlus } from "react-icons/ti";
 import type { User } from "../../../../types";
 import { useGetFriendsQuery } from "../../../../api/apiRoutes/friendsApi";
+import { pfpMap } from "../../../../components/pfp";
 
 interface FriendsTabProps {
   user: User;
@@ -57,9 +58,12 @@ export const FriendsTab = (props: FriendsTabProps) => {
                 gap: 1,
               }}
             >
-              <Fab size="small" color="secondary">
-                <MdArrowForwardIos />
-              </Fab>
+              <Avatar
+                variant="square"
+                alt={pfpMap[0]}
+                src={pfpMap[user.pfpIndex]}
+                sx={{ height: "2.3rem", width: "2.3rem" }}
+              />
               <h4>{user.name}</h4>
             </Box>
           </Box>
@@ -81,7 +85,13 @@ export const FriendsTab = (props: FriendsTabProps) => {
             {friends.map((n, index) => (
               <FriendCard
                 key={index}
-                pfp={<Avatar alt={n.name} src="/static/images/avatar/1.jpg" />}
+                pfp={
+                  <Avatar
+                    variant="square"
+                    alt={pfpMap[0]}
+                    src={pfpMap[n.pfpIndex]}
+                  />
+                }
                 name={n.name}
               />
             ))}
