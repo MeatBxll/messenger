@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 
 interface FriendCardProps {
   name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   pfp: any;
 }
 

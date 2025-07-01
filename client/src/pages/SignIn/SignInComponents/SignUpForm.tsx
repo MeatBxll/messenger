@@ -1,6 +1,6 @@
 import { Box, Button, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
-import { useSignupMutation } from "../../../api/authApi/authApi";
+import { useSignupMutation } from "../../../api/apiRoutes/authApi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../../api/authSlice";

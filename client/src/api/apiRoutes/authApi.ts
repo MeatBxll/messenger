@@ -1,3 +1,4 @@
+import type { GetMeResponse } from "../../types";
 import { apiSlice } from "../apiSlice";
 
 export const authApi = apiSlice.injectEndpoints({
@@ -17,7 +18,14 @@ export const authApi = apiSlice.injectEndpoints({
         body,
       }),
     }),
+    getMe: builder.query<GetMeResponse, void>({
+      query: () => ({
+        url: "/auth/me",
+        method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
   }),
 });
 
-export const { useSignupMutation, useSignInMutation } = authApi;
+export const { useSignupMutation, useSignInMutation, useGetMeQuery } = authApi;

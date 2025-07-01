@@ -1,26 +1,15 @@
-import { Box, Button, Container, Fab, TextField } from "@mui/material";
+import { Box, Container, Fab, TextField } from "@mui/material";
 import { MdArrowForwardIos } from "react-icons/md";
 import { IoSettingsSharp } from "react-icons/io5";
-import { HiMiniGif } from "react-icons/hi2";
-import { IoMdPhotos } from "react-icons/io";
 import { FriendsTab } from "./components/FriendsTab/FriendsTab";
-import { useSocket } from "../../context/SocketContext";
-import { useEffect } from "react";
+import { useGetMeQuery } from "../../api/apiRoutes/authApi";
 
 export const Home = () => {
-  const socket = useSocket();
+  const { data, isLoading, isError } = useGetMeQuery();
 
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on("connect", () => {
-      console.log("🟢 Connected to server:", socket.id);
-    });
-
-    return () => {
-      socket.off("connect");
-    };
-  }, [socket]);
+  if (isLoading) return <div>Loading . . .</div>;
+  if (isError || !data || !data.user)
+    return <div>Something went wrong . . .</div>;
 
   return (
     <Container
@@ -41,7 +30,7 @@ export const Home = () => {
             "rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px",
         }}
       >
-        <FriendsTab />
+        <FriendsTab user={data.user} />
         <Box
           sx={{
             backgroundColor: "#606368",
@@ -75,40 +64,23 @@ export const Home = () => {
               bgcolor: "#3C4042",
               display: "flex",
               alignItems: "center",
-              justifyContent: "space-between",
               padding: "0 2rem 0 2rem",
             }}
           >
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "center",
                 alignItems: "center",
-                width: "10rem",
+                gap: "1rem",
+                width: "100%",
+                justifyContent: "center",
               }}
             >
-              <Button>
-                <HiMiniGif size={"3rem"} />
-              </Button>
-              <Button>
-                <IoMdPhotos size={"3rem"} />
-              </Button>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center", gap: "1rem" }}>
               <TextField />
               <Fab size="small" color="primary">
                 <MdArrowForwardIos />
               </Fab>
             </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "10rem",
-              }}
-            ></Box>
           </Box>
         </Box>
       </Box>

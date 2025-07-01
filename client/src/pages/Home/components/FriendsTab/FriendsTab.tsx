@@ -3,27 +3,23 @@ import { useState } from "react";
 import { MdArrowForwardIos } from "react-icons/md";
 import { FriendCard } from "./FriendCard/FriendCard";
 import { TiPlus } from "react-icons/ti";
+import type { User } from "../../../../types";
+import { useGetFriendsQuery } from "../../../../api/apiRoutes/friendsApi";
 
-export const FriendsTab = () => {
+interface FriendsTabProps {
+  user: User;
+}
+
+export const FriendsTab = (props: FriendsTabProps) => {
+  const { user } = props;
   const [usersIn, setUsersIn] = useState(false);
-  const [friends, setFriends] = useState([
-    "Tim",
-    "Thomas",
-    "Jimmy",
-    "Steve",
-    "Frank",
-    "Nick",
-    "Josh",
-    "Ashly",
-    "Beth",
-    "Anna",
-    "Jen",
-    "Sam",
-    "Chris",
-    "Adam",
-    "Jean",
-    "Paul",
-  ]);
+
+  const { data, isLoading, isError } = useGetFriendsQuery();
+  if (isLoading) return <div>loading friends . . .</div>;
+  if (isError || !data || !data.friends)
+    return <div>Error when loading friends</div>;
+
+  const friends = data.friends;
 
   return (
     <Box
@@ -64,7 +60,7 @@ export const FriendsTab = () => {
               <Fab size="small" color="secondary">
                 <MdArrowForwardIos />
               </Fab>
-              <h3>Anthony</h3>
+              <h4>{user.name}</h4>
             </Box>
           </Box>
           <Box
@@ -85,10 +81,29 @@ export const FriendsTab = () => {
             {friends.map((n, index) => (
               <FriendCard
                 key={index}
-                pfp={<Avatar alt={n} src="/static/images/avatar/1.jpg" />}
-                name={n}
+                pfp={<Avatar alt={n.name} src="/static/images/avatar/1.jpg" />}
+                name={n.name}
               />
             ))}
+            {data.friends.length === 0 ? (
+              <div
+                style={{
+                  paddingLeft: "2rem",
+                  paddingRight: "2rem",
+                }}
+              >
+                <h5
+                  style={{
+                    padding: ".5rem",
+                    textAlign: "center",
+                    backgroundColor: "#3C3F41",
+                    borderRadius: ".5rem",
+                  }}
+                >
+                  You have no friends dude get some . . .
+                </h5>
+              </div>
+            ) : null}
           </Box>
           <Box
             sx={{
