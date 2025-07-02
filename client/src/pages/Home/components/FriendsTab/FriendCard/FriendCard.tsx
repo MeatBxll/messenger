@@ -2,14 +2,14 @@ import { Button } from "@mui/material";
 
 interface FriendCardProps {
   name: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  pfp: any;
+  pfp: React.ReactNode;
+  whereTo: () => void;
 }
 
-export const FriendCard = (props: FriendCardProps) => {
-  const { name, pfp } = props;
+export const FriendCard = ({ name, pfp, whereTo }: FriendCardProps) => {
   return (
     <Button
+      onClick={whereTo}
       variant="contained"
       sx={{
         width: "90%",

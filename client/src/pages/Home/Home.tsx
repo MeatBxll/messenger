@@ -1,15 +1,24 @@
-import { Box, Container, Fab, TextField } from "@mui/material";
-import { MdArrowForwardIos } from "react-icons/md";
-import { IoSettingsSharp } from "react-icons/io5";
+import { Box, Container } from "@mui/material";
 import { FriendsTab } from "./components/FriendsTab/FriendsTab";
 import { useGetMeQuery } from "../../api/apiRoutes/authApi";
+import { Header } from "./components/MainInterface/Header";
+import { Body } from "./components/MainInterface/Body";
+import { Footer } from "./components/MainInterface/Footer";
+import { useState } from "react";
 
 export const Home = () => {
   const { data, isLoading, isError } = useGetMeQuery();
+  const [isMyDash, setIsMyDash] = useState(true);
+  const [headerName, setHeaderName] = useState(data?.user.name);
 
   if (isLoading) return <div>Loading . . .</div>;
   if (isError || !data || !data.user)
     return <div>Something went wrong . . .</div>;
+
+  const determineBlock = (friendId: number, friendName: string) => {
+    setIsMyDash(friendId === -1);
+    setHeaderName(friendName);
+  };
 
   return (
     <Container
@@ -30,7 +39,7 @@ export const Home = () => {
             "rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px",
         }}
       >
-        <FriendsTab user={data.user} />
+        <FriendsTab whereTo={determineBlock} user={data.user} />
         <Box
           sx={{
             backgroundColor: "#606368",
@@ -40,48 +49,11 @@ export const Home = () => {
             flexDirection: "column",
           }}
         >
-          <Box
-            sx={{
-              width: "100%",
-              bgcolor: "#3C4042",
-              flex: 1,
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "0 2rem 0 2rem",
-              alignItems: "center",
-            }}
-          >
-            <h2>Other Users's name</h2>
-            <Fab size="small" color="primary">
-              <IoSettingsSharp />
-            </Fab>
-          </Box>
-          <Box sx={{ width: "100%", flex: 10 }}></Box>
-          <Box
-            sx={{
-              width: "100%",
-              flex: 2,
-              bgcolor: "#3C4042",
-              display: "flex",
-              alignItems: "center",
-              padding: "0 2rem 0 2rem",
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-                width: "100%",
-                justifyContent: "center",
-              }}
-            >
-              <TextField />
-              <Fab size="small" color="primary">
-                <MdArrowForwardIos />
-              </Fab>
-            </Box>
-          </Box>
+          <Header text={headerName} />
+
+          <Body user={data.user} />
+
+          <Footer isNeeded={!isMyDash} />
         </Box>
       </Box>
     </Container>

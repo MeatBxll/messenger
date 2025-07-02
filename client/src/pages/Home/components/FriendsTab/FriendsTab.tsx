@@ -1,4 +1,4 @@
-import { Avatar, Box, Collapse, Fab } from "@mui/material";
+import { Avatar, Box, Button, Collapse, Fab } from "@mui/material";
 import { useState } from "react";
 import { MdArrowForwardIos } from "react-icons/md";
 import { FriendCard } from "./FriendCard/FriendCard";
@@ -9,10 +9,11 @@ import { pfpMap } from "../../../../components/pfp";
 
 interface FriendsTabProps {
   user: User;
+  whereTo: (id: number, name: string) => void;
 }
 
 export const FriendsTab = (props: FriendsTabProps) => {
-  const { user } = props;
+  const { user, whereTo } = props;
   const [usersIn, setUsersIn] = useState(false);
 
   const { data, isLoading, isError } = useGetFriendsQuery();
@@ -47,7 +48,8 @@ export const FriendsTab = (props: FriendsTabProps) => {
               display: "flex",
             }}
           >
-            <Box
+            <Button
+              onClick={() => whereTo(-1, user.name)}
               sx={{
                 bgcolor: "#3c3f41",
                 flex: 1,
@@ -64,8 +66,8 @@ export const FriendsTab = (props: FriendsTabProps) => {
                 src={pfpMap[user.pfpIndex]}
                 sx={{ height: "2.3rem", width: "2.3rem" }}
               />
-              <h4>{user.name}</h4>
-            </Box>
+              <h4 style={{ textWrap: "nowrap" }}>{user.name}</h4>
+            </Button>
           </Box>
           <Box
             sx={{
@@ -84,6 +86,7 @@ export const FriendsTab = (props: FriendsTabProps) => {
           >
             {friends.map((n, index) => (
               <FriendCard
+                whereTo={() => whereTo(n.id, n.name)}
                 key={index}
                 pfp={
                   <Avatar
