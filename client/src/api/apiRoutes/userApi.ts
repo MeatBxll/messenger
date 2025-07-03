@@ -1,3 +1,4 @@
+import type { UserPreview } from "../../types";
 import { apiSlice } from "../apiSlice";
 
 export const authApi = apiSlice.injectEndpoints({
@@ -9,7 +10,10 @@ export const authApi = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["User"],
     }),
+    getAllUsers: builder.query<UserPreview[], void>({
+      query: () => "/user",
+    }),
   }),
 });
 
-export const { useChangPfpMutation } = authApi;
+export const { useChangPfpMutation, useGetAllUsersQuery } = authApi;

@@ -2,10 +2,15 @@ import { Avatar, Box, Button, Collapse, Fab } from "@mui/material";
 import { useState } from "react";
 import { MdArrowForwardIos } from "react-icons/md";
 import { FriendCard } from "./FriendCard/FriendCard";
-import { TiPlus } from "react-icons/ti";
 import type { User } from "../../../../types";
 import { useGetFriendsQuery } from "../../../../api/apiRoutes/friendsApi";
 import { pfpMap } from "../../../../components/pfp";
+import { AddFriends } from "./AddFriends/AddFriends";
+import { useDispatch } from "react-redux";
+import { logout as logoutAction } from "../../../../api/authSlice";
+import { useLogoutMutation } from "../../../../api/apiRoutes/authApi";
+import { useNavigate } from "react-router-dom";
+import { apiSlice } from "../../../../api/apiSlice";
 
 interface FriendsTabProps {
   user: User;
@@ -15,8 +20,23 @@ interface FriendsTabProps {
 export const FriendsTab = (props: FriendsTabProps) => {
   const { user, whereTo } = props;
   const [usersIn, setUsersIn] = useState(false);
-
   const { data, isLoading, isError } = useGetFriendsQuery();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [triggerLogout] = useLogoutMutation();
+
+  const handleLogout = async () => {
+    try {
+      await triggerLogout().unwrap();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    } finally {
+      dispatch(logoutAction());
+      dispatch(apiSlice.util.resetApiState()); // Clear all RTK Query cache
+      navigate("/");
+    }
+  };
+
   if (isLoading) return <div>loading friends . . .</div>;
   if (isError || !data || !data.friends)
     return <div>Error when loading friends</div>;
@@ -34,7 +54,7 @@ export const FriendsTab = (props: FriendsTabProps) => {
         <Box
           sx={{
             backgroundColor: "#2e3031",
-            width: 200,
+            width: 240, // increased width for better spacing
             height: "100%",
             display: "flex",
             flexDirection: "column",
@@ -48,40 +68,78 @@ export const FriendsTab = (props: FriendsTabProps) => {
               display: "flex",
             }}
           >
-            <Button
-              onClick={() => whereTo(-1, user.name)}
+            <Box
               sx={{
                 bgcolor: "#3c3f41",
                 flex: 1,
                 borderRadius: 2,
                 display: "flex",
-                justifyContent: "center",
+                justifyContent: "space-between",
                 alignItems: "center",
                 gap: 1,
               }}
             >
-              <Avatar
-                variant="square"
-                alt={pfpMap[0]}
-                src={pfpMap[user.pfpIndex]}
-                sx={{ height: "2.3rem", width: "2.3rem" }}
-              />
-              <h4 style={{ textWrap: "nowrap" }}>{user.name}</h4>
-            </Button>
+              <Button
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  gap: "0.75rem",
+                  overflow: "hidden",
+                  textTransform: "none",
+                }}
+                onClick={() => whereTo(-1, user.name)}
+              >
+                <Avatar
+                  variant="square"
+                  alt={pfpMap[0]}
+                  src={pfpMap[user.pfpIndex]}
+                  sx={{ height: "2.3rem", width: "2.3rem" }}
+                />
+                <h4
+                  style={{
+                    textWrap: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "6rem",
+                    margin: 0,
+                  }}
+                >
+                  {user.name}
+                </h4>
+              </Button>
+              <Button
+                variant="contained"
+                size="small"
+                color="error"
+                onClick={handleLogout}
+                sx={{
+                  textTransform: "none",
+                  minWidth: 0,
+                  px: 1,
+                  "&:hover": {
+                    bgcolor: "#b71c1c",
+                  },
+                }}
+              >
+                Logout
+              </Button>
+            </Box>
           </Box>
           <Box
             sx={{
               flex: 15,
               width: "100%",
-              overflowY: "scroll",
-              scrollbarWidth: "none",
+              overflowY: "auto",
               display: "flex",
               alignItems: "center",
               gap: "1rem",
               flexDirection: "column",
+              paddingX: 1,
+              paddingY: 1,
               "&::-webkit-scrollbar": {
                 display: "none",
               },
+              scrollbarWidth: "none",
             }}
           >
             {friends.map((n, index) => (
@@ -98,11 +156,10 @@ export const FriendsTab = (props: FriendsTabProps) => {
                 name={n.name}
               />
             ))}
-            {data.friends.length === 0 ? (
-              <div
-                style={{
-                  paddingLeft: "2rem",
-                  paddingRight: "2rem",
+            {friends.length === 0 && (
+              <Box
+                sx={{
+                  px: 2,
                 }}
               >
                 <h5
@@ -111,28 +168,15 @@ export const FriendsTab = (props: FriendsTabProps) => {
                     textAlign: "center",
                     backgroundColor: "#3C3F41",
                     borderRadius: ".5rem",
+                    margin: 0,
                   }}
                 >
                   You have no friends dude get some . . .
                 </h5>
-              </div>
-            ) : null}
+              </Box>
+            )}
           </Box>
-          <Box
-            sx={{
-              flex: 2,
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "1rem",
-            }}
-          >
-            <h3>Add Friend</h3>
-            <Fab size="small" color="primary">
-              <TiPlus />
-            </Fab>
-          </Box>
+          <AddFriends />
         </Box>
       </Collapse>
       <Box

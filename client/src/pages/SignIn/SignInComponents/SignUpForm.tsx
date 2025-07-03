@@ -3,7 +3,8 @@ import { useState, useEffect } from "react";
 import { useSignupMutation } from "../../../api/apiRoutes/authApi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../../../api/authSlice";
+import { setCredentials, logout as logoutAction } from "../../../api/authSlice";
+import { apiSlice } from "../../../api/apiSlice";
 
 export const SignUpForm = () => {
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ export const SignUpForm = () => {
 
   const [feedback, setFeedback] = useState("");
 
-  const [signup, { data, isSuccess }] = useSignupMutation();
+  const [signup, { data, isSuccess, isLoading }] = useSignupMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -33,6 +34,9 @@ export const SignUpForm = () => {
     }
 
     try {
+      dispatch(logoutAction());
+      dispatch(apiSlice.util.resetApiState());
+
       await signup({
         name: formData.name,
         email: formData.email,
@@ -52,14 +56,17 @@ export const SignUpForm = () => {
   };
 
   useEffect(() => {
-    if (isSuccess && data) {
+    if (isSuccess && data?.accessToken) {
       dispatch(
         setCredentials({
           accessToken: data.accessToken,
           user: data.user,
         })
       );
-      navigate("/home");
+
+      setTimeout(() => {
+        navigate("/home");
+      }, 50);
     }
   }, [isSuccess, data, dispatch, navigate]);
 
@@ -83,6 +90,7 @@ export const SignUpForm = () => {
         name="name"
         label="Name"
         variant="standard"
+        autoComplete="off"
         value={formData.name}
         onChange={handleChange}
       />
@@ -90,6 +98,7 @@ export const SignUpForm = () => {
         name="email"
         label="Email"
         variant="standard"
+        autoComplete="off"
         value={formData.email}
         onChange={handleChange}
       />
@@ -98,6 +107,7 @@ export const SignUpForm = () => {
         label="Password"
         type="password"
         variant="standard"
+        autoComplete="new-password"
         value={formData.password}
         onChange={handleChange}
       />
@@ -106,10 +116,13 @@ export const SignUpForm = () => {
         label="Confirm Password"
         type="password"
         variant="standard"
+        autoComplete="new-password"
         value={formData.confirmPassword}
         onChange={handleChange}
       />
-      <Button type="submit">Sign Up</Button>
+      <Button type="submit" disabled={isLoading}>
+        {isLoading ? "Creating..." : "Sign Up"}
+      </Button>
     </Box>
   );
 };

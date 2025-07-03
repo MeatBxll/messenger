@@ -110,11 +110,6 @@ export const respondToRequest = async (req: Request, res: Response) => {
     }
 
     if (action === "accept") {
-      await prismaInstance.friendRequest.update({
-        where: { id: requestId },
-        data: { status: "accepted" },
-      });
-
       await prismaInstance.user.update({
         where: { id: userId },
         data: {
@@ -133,12 +128,15 @@ export const respondToRequest = async (req: Request, res: Response) => {
         },
       });
 
+      await prismaInstance.friendRequest.delete({
+        where: { id: requestId },
+      });
+
       return res.json({ message: "Friend request accepted" });
     }
 
-    await prismaInstance.friendRequest.update({
+    await prismaInstance.friendRequest.delete({
       where: { id: requestId },
-      data: { status: "rejected" },
     });
 
     return res.json({ message: "Friend request rejected" });

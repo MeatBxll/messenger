@@ -1,10 +1,10 @@
-// src/pages/SignIn/SignInComponents/SignInForm.tsx
 import { Box, Button, TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useSignInMutation } from "../../../api/apiRoutes/authApi";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../../../api/authSlice";
+import { setCredentials, logout as logoutAction } from "../../../api/authSlice";
+import { apiSlice } from "../../../api/apiSlice";
 
 export const SignInForm = () => {
   interface ApiError {
@@ -30,7 +30,7 @@ export const SignInForm = () => {
   });
   const [feedback, setFeedback] = useState("");
 
-  const [signIn, { data, isSuccess }] = useSignInMutation();
+  const [signIn, { data, isSuccess, isLoading }] = useSignInMutation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,7 +39,11 @@ export const SignInForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     try {
+      dispatch(logoutAction());
+      dispatch(apiSlice.util.resetApiState());
+
       await signIn(formData).unwrap();
       setFeedback("✅ Signed in successfully!");
     } catch (err: unknown) {
@@ -102,8 +106,8 @@ export const SignInForm = () => {
         value={formData.password}
         autoComplete="current-password"
       />
-      <Button type="submit" variant="contained">
-        Sign In
+      <Button type="submit" variant="contained" disabled={isLoading}>
+        {isLoading ? "Signing in..." : "Sign In"}
       </Button>
     </Box>
   );

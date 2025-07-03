@@ -82,12 +82,41 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+export const logoutUser = (req: Request, res: Response) => {
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+  return res.status(200).json({ message: "Logged out successfully" });
+};
+
 export const getMe = async (req: Request, res: Response) => {
   const userId = req.userId;
+
   if (!userId) return res.status(401).json({ message: "Not authenticated" });
 
-  const user = await prismaInstance.user.findUnique({ where: { id: userId } });
-  if (!user) return res.status(404).json({ message: "User not found" });
+  try {
+    const user = await prismaInstance.user.findUnique({
+      where: { id: userId },
+      include: {
+        receivedRequests: {
+          include: {
+            sender: true,
+          },
+        },
+        sentRequests: {
+          include: {
+            receiver: true,
+          },
+        },
+      },
+    });
 
-  return res.json({ user });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    return res.json({ user });
+  } catch (err) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
 };

@@ -1,32 +1,130 @@
-import { Box, Container } from "@mui/material";
+import { Box, Container, Skeleton } from "@mui/material";
 import { FriendsTab } from "./components/FriendsTab/FriendsTab";
 import { useGetMeQuery } from "../../api/apiRoutes/authApi";
 import { Header } from "./components/MainInterface/Header";
 import { Body } from "./components/MainInterface/Body";
 import { Footer } from "./components/MainInterface/Footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Home = () => {
-  const { data, isLoading, isError } = useGetMeQuery();
+  const { data, isLoading, isError, error } = useGetMeQuery();
   const [isMyDash, setIsMyDash] = useState(true);
-  const [headerName, setHeaderName] = useState(data?.user.name);
+  const [headerName, setHeaderName] = useState<string | undefined>(
+    data?.user.name
+  );
+  const navigate = useNavigate();
 
-  if (isLoading) return <div>Loading . . .</div>;
-  if (isError || !data || !data.user)
-    return <div>Something went wrong . . .</div>;
+  useEffect(() => {
+    if (data?.user?.name) {
+      setHeaderName(data.user.name);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (isError) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      function isApiError(err: any): err is { data: { message?: string } } {
+        return (
+          typeof err === "object" &&
+          err !== null &&
+          "data" in err &&
+          typeof err.data === "object" &&
+          err.data !== null &&
+          "message" in err.data
+        );
+      }
+
+      const message =
+        isApiError(error) && error.data.message
+          ? error.data.message
+          : "Unknown error occurred";
+
+      alert(`Error: ${message}`);
+      navigate("/", { replace: true });
+    }
+  }, [isError, error, navigate]);
 
   const determineBlock = (friendId: number, friendName: string) => {
     setIsMyDash(friendId === -1);
     setHeaderName(friendName);
   };
 
+  if (isLoading)
+    return (
+      <Container
+        sx={{
+          height: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          userSelect: "none",
+          px: 2,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "stretch",
+            height: "80vh",
+            width: "100%",
+            maxWidth: 1200,
+            boxShadow:
+              "rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px",
+            borderRadius: 3,
+            overflow: "hidden",
+          }}
+        >
+          <Skeleton
+            variant="rectangular"
+            animation="wave"
+            sx={{ width: 220, height: "100%", borderRadius: 0 }}
+          />
+
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+              p: 2,
+              bgcolor: "#e0e0e0",
+              borderRadius: 0,
+            }}
+          >
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              height={60}
+              sx={{ borderRadius: 2 }}
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              sx={{ flexGrow: 1, borderRadius: 2 }}
+            />
+            <Skeleton
+              variant="rectangular"
+              animation="wave"
+              height={50}
+              sx={{ borderRadius: 2 }}
+            />
+          </Box>
+        </Box>
+      </Container>
+    );
+
+  if (!data || !data.user) return null;
+
   return (
     <Container
+      maxWidth="lg"
       sx={{
         height: "100vh",
         display: "flex",
         alignItems: "center",
         userSelect: "none",
+        px: 2,
       }}
     >
       <Box
@@ -37,6 +135,8 @@ export const Home = () => {
           width: "100%",
           boxShadow:
             "rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px",
+          borderRadius: 3,
+          overflow: "hidden",
         }}
       >
         <FriendsTab whereTo={determineBlock} user={data.user} />
@@ -47,9 +147,15 @@ export const Home = () => {
             flexGrow: 1,
             display: "flex",
             flexDirection: "column",
+            borderTopRightRadius: 12,
+            borderBottomRightRadius: 12,
+            boxShadow: "inset 0 0 10px rgb(0 0 0 / 0.15)",
           }}
         >
-          <Header text={headerName} />
+          <Header
+            recievedRequests={data.user.receivedRequests}
+            text={headerName}
+          />
 
           <Body user={data.user} />
 

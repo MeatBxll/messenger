@@ -10,6 +10,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
         id: true,
         name: true,
         email: true,
+        pfpIndex: true,
       },
     });
 
@@ -55,7 +56,6 @@ export const createUser = async (req: Request, res: Response) => {
       }
     );
 
-    // Set refresh token cookie (HttpOnly, Secure, etc)
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
