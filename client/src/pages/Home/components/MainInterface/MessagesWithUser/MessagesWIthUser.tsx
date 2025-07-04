@@ -3,23 +3,16 @@ import type { UserPreview, Message } from "../../../../../types";
 import {
   useGetMessagesWithUserQuery,
   useSendMessageMutation,
-  authApi,
 } from "../../../../../api/apiRoutes/userApi";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
 interface MessagesWithUserProps {
   otherUser: UserPreview;
   userId: number;
 }
 
-// Create socket instance once outside component
-const socket = io("http://localhost:8000", {
-  withCredentials: true,
-  auth: {
-    userId: localStorage.getItem("userId") ?? "",
-  },
-});
+let socket: Socket | null = null;
 
 export const MessagesWithUser = ({
   otherUser,
@@ -33,58 +26,49 @@ export const MessagesWithUser = ({
   } = useGetMessagesWithUserQuery(otherUser.id);
 
   const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
-
   const [input, setInput] = useState("");
+  const [liveMessages, setLiveMessages] = useState<Message[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Use RTK Query data as source of truth, memoized for performance
-  const messages = useMemo(() => messagesData ?? [], [messagesData]);
-
-  // Scroll to bottom on message changes
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  const messages = useMemo(
+    () => [...(messagesData ?? []), ...liveMessages],
+    [messagesData, liveMessages]
+  );
 
   useEffect(() => {
-    console.log("✅ Socket connected:", socket.id);
+    if (!userId || socket) return;
 
-    // Cast socket.auth to avoid TS error
-    const auth = socket.auth as { userId?: string };
-    console.log("🆔 Socket auth userId:", auth.userId);
+    socket = io("http://localhost:8000", {
+      withCredentials: true,
+      auth: { userId },
+    });
 
-    const handleNewMessage = (newMsg: Message) => {
-      console.log("📨 Received new-message event:", newMsg);
+    socket.on("connect", () => {
+      console.log("✅ Socket connected:", socket!.id);
+    });
 
-      // Check if new message belongs to this chat
+    socket.on("new-message", (newMsg: Message) => {
       const isRelevant =
         (newMsg.senderId === userId && newMsg.recipientId === otherUser.id) ||
         (newMsg.senderId === otherUser.id && newMsg.recipientId === userId);
 
-      if (!isRelevant) {
-        console.log("📨 Message not relevant, ignoring");
-        return;
+      if (isRelevant) {
+        setLiveMessages((prev) => {
+          const exists = prev.some((msg) => msg.id === newMsg.id);
+          return exists ? prev : [...prev, newMsg];
+        });
       }
-
-      // Update RTK Query cache for this chat
-      authApi.util.updateQueryData(
-        "getMessagesWithUser",
-        otherUser.id,
-        (draft) => {
-          if (!draft.find((msg) => msg.id === newMsg.id)) {
-            draft.push(newMsg);
-            console.log("🛠️ Added new message to cache");
-          }
-        }
-      );
-    };
-
-    socket.on("new-message", handleNewMessage);
+    });
 
     return () => {
-      console.log("👋 Cleaning up socket listener");
-      socket.off("new-message", handleNewMessage);
+      socket?.disconnect();
+      socket = null;
     };
   }, [userId, otherUser.id]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -92,23 +76,21 @@ export const MessagesWithUser = ({
     const content = input.trim();
 
     try {
-      // Send message via backend API
       await sendMessage({
         content,
         recipientId: otherUser.id,
       }).unwrap();
 
-      // Emit socket event to notify others
-      socket.emit("send-message", {
-        senderId: userId,
-        recipientId: otherUser.id,
-        content,
-      });
-
       setInput("");
     } catch {
       alert("❌ Error sending message. Please try again.");
     }
+
+    socket?.emit("send-message", {
+      senderId: userId,
+      recipientId: otherUser.id,
+      content,
+    });
   };
 
   if (isLoading) {
@@ -154,11 +136,17 @@ export const MessagesWithUser = ({
               alignSelf: msg.senderId === userId ? "flex-end" : "flex-start",
               maxWidth: "70%",
               wordBreak: "break-word",
-              color: "black", // Text color black for contrast
+              color: "black",
             }}
           >
             <strong>{msg.senderId === userId ? "You" : otherUser.name}:</strong>{" "}
             {msg.content}
+            <Box sx={{ fontSize: "0.75rem", opacity: 0.7 }}>
+              {new Date(msg.createdAt).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </Box>
           </Box>
         ))}
         <div ref={bottomRef} />
