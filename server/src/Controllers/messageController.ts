@@ -5,10 +5,13 @@ export const createMessage = async (req: Request, res: Response) => {
   const { content, recipientId } = req.body;
   const userId = req.userId;
 
-  if (!content || !recipientId || !userId)
-    res
+  console.log("Incoming Message:", { content, recipientId, userId });
+
+  if (!content || !recipientId || !userId) {
+    return res
       .status(400)
       .json({ message: "Missing content, User Id, or Recipient Id" });
+  }
 
   try {
     const message = await prismaInstance.message.create({
@@ -21,7 +24,7 @@ export const createMessage = async (req: Request, res: Response) => {
 
     return res.status(201).json({ message });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Error in createMessage:", error);
     return res.status(500).json({ message: "Error sending message" });
   }
 };
@@ -81,7 +84,7 @@ export const deleteMessage = async (req: Request, res: Response) => {
 
 export const getMessagesWithUser = async (req: Request, res: Response) => {
   const userId = req.userId;
-  const otherUserId = parseInt(req.params.userId);
+  const otherUserId = parseInt(req.params.id);
   if (!userId || isNaN(otherUserId)) {
     return res.status(401).json({ message: "Invalid request" });
   }
@@ -94,10 +97,11 @@ export const getMessagesWithUser = async (req: Request, res: Response) => {
           { senderId: userId, recipientId: otherUserId },
         ],
       },
+
       orderBy: { createdAt: "asc" },
     });
 
-    return res.json({ messages });
+    return res.json(messages);
   } catch (err) {
     res.status(401).json({ message: "Error when getting messages" });
   }

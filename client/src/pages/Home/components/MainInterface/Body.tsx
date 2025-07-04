@@ -1,13 +1,16 @@
 import { Box } from "@mui/material";
-import type { User } from "../../../../types";
+import type { User, UserPreview } from "../../../../types";
 import { MyDash } from "./MyDash/MyDash";
+import { MessagesWithUser } from "./MessagesWithUser/MessagesWIthUser";
 
 interface BodyProps {
   user: User;
+  otherUser: UserPreview;
+  isMyDash: boolean;
 }
 
 export const Body = (props: BodyProps) => {
-  const { user } = props;
+  const { user, otherUser, isMyDash } = props;
   return (
     <Box
       sx={{
@@ -21,7 +24,11 @@ export const Body = (props: BodyProps) => {
         "-ms-overflow-style": "none",
       }}
     >
-      <MyDash user={user} />
+      {isMyDash ? (
+        <MyDash user={user} />
+      ) : (
+        <MessagesWithUser userId={user.id} otherUser={otherUser} />
+      )}
     </Box>
   );
 };

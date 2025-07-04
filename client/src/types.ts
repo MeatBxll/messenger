@@ -39,3 +39,11 @@ export interface ReceivedRequest {
   createdAt: string;
   sender: UserPreview;
 }
+
+export interface Message {
+  id: number;
+  content: string;
+  createdAt: number;
+  senderId: number;
+  recipientId: number;
+}

@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./App.css";
 import { Home } from "./pages/Home/Home";
 import { SignIn } from "./pages/SignIn/SignIn";
 import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
@@ -8,7 +7,7 @@ import { SocketProvider } from "./context/SocketContext";
 function App() {
   const theme = createTheme({
     palette: {
-      mode: "dark", // or "light"
+      mode: "dark",
       background: { default: "#202124", paper: "#212121" },
       primary: {
         main: "#DEDEF7",

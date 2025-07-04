@@ -3,9 +3,9 @@ import { FriendsTab } from "./components/FriendsTab/FriendsTab";
 import { useGetMeQuery } from "../../api/apiRoutes/authApi";
 import { Header } from "./components/MainInterface/Header";
 import { Body } from "./components/MainInterface/Body";
-import { Footer } from "./components/MainInterface/Footer";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import type { UserPreview } from "../../types";
 
 export const Home = () => {
   const { data, isLoading, isError, error } = useGetMeQuery();
@@ -14,6 +14,13 @@ export const Home = () => {
     data?.user.name
   );
   const navigate = useNavigate();
+
+  const [otherUser, setOtherUser] = useState<UserPreview>({
+    id: -1,
+    name: "placeHolder",
+    email: "//",
+    pfpIndex: 0,
+  });
 
   useEffect(() => {
     if (data?.user?.name) {
@@ -45,9 +52,10 @@ export const Home = () => {
     }
   }, [isError, error, navigate]);
 
-  const determineBlock = (friendId: number, friendName: string) => {
-    setIsMyDash(friendId === -1);
-    setHeaderName(friendName);
+  const determineBlock = (friend: UserPreview, isDash: boolean) => {
+    setIsMyDash(isDash);
+    setHeaderName(friend.name);
+    setOtherUser(friend);
   };
 
   if (isLoading)
@@ -157,9 +165,7 @@ export const Home = () => {
             text={headerName}
           />
 
-          <Body user={data.user} />
-
-          <Footer isNeeded={!isMyDash} />
+          <Body isMyDash={isMyDash} otherUser={otherUser} user={data.user} />
         </Box>
       </Box>
     </Container>

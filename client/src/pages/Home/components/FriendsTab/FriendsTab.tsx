@@ -2,7 +2,7 @@ import { Avatar, Box, Button, Collapse, Fab } from "@mui/material";
 import { useState } from "react";
 import { MdArrowForwardIos } from "react-icons/md";
 import { FriendCard } from "./FriendCard/FriendCard";
-import type { User } from "../../../../types";
+import type { User, UserPreview } from "../../../../types";
 import { useGetFriendsQuery } from "../../../../api/apiRoutes/friendsApi";
 import { pfpMap } from "../../../../components/pfp";
 import { AddFriends } from "./AddFriends/AddFriends";
@@ -14,7 +14,7 @@ import { apiSlice } from "../../../../api/apiSlice";
 
 interface FriendsTabProps {
   user: User;
-  whereTo: (id: number, name: string) => void;
+  whereTo: (friend: UserPreview, isDash: boolean) => void;
 }
 
 export const FriendsTab = (props: FriendsTabProps) => {
@@ -32,7 +32,7 @@ export const FriendsTab = (props: FriendsTabProps) => {
       console.error("Logout failed:", err);
     } finally {
       dispatch(logoutAction());
-      dispatch(apiSlice.util.resetApiState()); // Clear all RTK Query cache
+      dispatch(apiSlice.util.resetApiState());
       navigate("/");
     }
   };
@@ -54,7 +54,7 @@ export const FriendsTab = (props: FriendsTabProps) => {
         <Box
           sx={{
             backgroundColor: "#2e3031",
-            width: 240, // increased width for better spacing
+            width: 240,
             height: "100%",
             display: "flex",
             flexDirection: "column",
@@ -87,7 +87,7 @@ export const FriendsTab = (props: FriendsTabProps) => {
                   overflow: "hidden",
                   textTransform: "none",
                 }}
-                onClick={() => whereTo(-1, user.name)}
+                onClick={() => whereTo(user, true)}
               >
                 <Avatar
                   variant="square"
@@ -144,7 +144,7 @@ export const FriendsTab = (props: FriendsTabProps) => {
           >
             {friends.map((n, index) => (
               <FriendCard
-                whereTo={() => whereTo(n.id, n.name)}
+                whereTo={() => whereTo(n, false)}
                 key={index}
                 pfp={
                   <Avatar

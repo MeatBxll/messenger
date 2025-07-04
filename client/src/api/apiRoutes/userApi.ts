@@ -1,4 +1,4 @@
-import type { UserPreview } from "../../types";
+import type { Message, UserPreview } from "../../types";
 import { apiSlice } from "../apiSlice";
 
 export const authApi = apiSlice.injectEndpoints({
@@ -13,7 +13,22 @@ export const authApi = apiSlice.injectEndpoints({
     getAllUsers: builder.query<UserPreview[], void>({
       query: () => "/user",
     }),
+    getMessagesWithUser: builder.query<Message[], number>({
+      query: (otherUserId) => `/message/with/user/${otherUserId}`,
+    }),
+    sendMessage: builder.mutation({
+      query: (body) => ({
+        url: "/message",
+        method: "POST",
+        body,
+      }),
+    }),
   }),
 });
 
-export const { useChangPfpMutation, useGetAllUsersQuery } = authApi;
+export const {
+  useChangPfpMutation,
+  useGetAllUsersQuery,
+  useGetMessagesWithUserQuery,
+  useSendMessageMutation,
+} = authApi;
