@@ -1,9 +1,6 @@
 import { Box, Button, TextField, Skeleton } from "@mui/material";
 import type { UserPreview, Message } from "../../../../../types";
-import {
-  useGetMessagesWithUserQuery,
-  useSendMessageMutation,
-} from "../../../../../api/apiRoutes/userApi";
+import { useGetMessagesWithUserQuery } from "../../../../../api/apiRoutes/userApi";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -13,7 +10,6 @@ interface MessagesWithUserProps {
 }
 
 let socket: Socket | null = null;
-
 export const MessagesWithUser = ({
   otherUser,
   userId,
@@ -25,7 +21,7 @@ export const MessagesWithUser = ({
     error,
   } = useGetMessagesWithUserQuery(otherUser.id);
 
-  const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
+  const [isSending, setIsSending] = useState(false);
   const [input, setInput] = useState("");
   const [liveMessages, setLiveMessages] = useState<Message[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -76,21 +72,18 @@ export const MessagesWithUser = ({
     const content = input.trim();
 
     try {
-      await sendMessage({
-        content,
+      socket?.emit("send-message", {
+        senderId: userId,
         recipientId: otherUser.id,
-      }).unwrap();
-
-      setInput("");
+        content,
+      });
+      setIsSending(true);
     } catch {
       alert("❌ Error sending message. Please try again.");
     }
+    setInput("");
 
-    socket?.emit("send-message", {
-      senderId: userId,
-      recipientId: otherUser.id,
-      content,
-    });
+    setIsSending(false);
   };
 
   if (isLoading) {

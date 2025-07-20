@@ -120,3 +120,5 @@ export const getMe = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const signInWithGoogle = (req: Request, res: Response) => {};

@@ -44,9 +44,11 @@ export const createUser = async (req: Request, res: Response) => {
 
     const payload = { userId: user.id };
 
-    const accessToken = jwt.sign(payload, process.env.JWT_SECRET as string, {
-      expiresIn: "15m",
-    });
+    const accessToken = jwt.sign(
+      { id: user.id },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "15m" }
+    );
 
     const refreshToken = jwt.sign(
       payload,
@@ -64,9 +66,14 @@ export const createUser = async (req: Request, res: Response) => {
     });
 
     const { password: _, ...userWithoutPassword } = user;
-    return res.status(201).json({
-      user: userWithoutPassword,
+    return res.json({
+      message: "logged in",
       accessToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      },
     });
   } catch (err: any) {
     console.error(err);

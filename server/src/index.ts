@@ -12,6 +12,9 @@ import messageRoutes from "./routes/messageRoutes";
 import { messageHandler } from "./socketHandlers/messageHandler";
 import { notificationHandler } from "./socketHandlers/notificationHandler";
 
+import session from "express-session";
+import passport from "./passportConfig";
+
 const app = express();
 const server = http.createServer(app);
 
@@ -49,6 +52,22 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+
+//passport.js middleware
+app.use(
+  session({
+    secret: "your-session-secret", // Replace with env var later
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: false,
+    },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes
 app.use("/api/user", userRoutes);

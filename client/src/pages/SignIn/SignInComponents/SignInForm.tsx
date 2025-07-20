@@ -70,45 +70,57 @@ export const SignInForm = () => {
   }, [isSuccess, data, dispatch, navigate]);
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "2rem",
-        paddingX: "7rem",
-        paddingY: "5rem",
-        borderRadius: "1rem",
-        border: 1,
-      }}
-    >
-      {feedback && (
-        <h3 style={{ color: feedback.startsWith("✅") ? "green" : "red" }}>
-          {feedback}
-        </h3>
-      )}
+    <Box>
+      <Box
+        component="form"
+        onSubmit={handleSubmit}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "2rem",
+          paddingX: "7rem",
+          paddingY: "5rem",
+          borderRadius: "1rem",
+          border: 1,
+        }}
+      >
+        {feedback && (
+          <h3 style={{ color: feedback.startsWith("✅") ? "green" : "red" }}>
+            {feedback}
+          </h3>
+        )}
 
-      <TextField
-        name="email"
-        label="Email"
-        variant="standard"
-        onChange={handleChange}
-        value={formData.email}
-        autoComplete="email"
-      />
-      <TextField
-        name="password"
-        label="Password"
-        variant="standard"
-        type="password"
-        onChange={handleChange}
-        value={formData.password}
-        autoComplete="current-password"
-      />
-      <Button type="submit" variant="contained" disabled={isLoading}>
-        {isLoading ? "Signing in..." : "Sign In"}
-      </Button>
+        <TextField
+          name="email"
+          label="Email"
+          variant="standard"
+          onChange={handleChange}
+          value={formData.email}
+          autoComplete="email"
+        />
+        <TextField
+          name="password"
+          label="Password"
+          variant="standard"
+          type="password"
+          onChange={handleChange}
+          value={formData.password}
+          autoComplete="current-password"
+        />
+        <Button type="submit" variant="contained" disabled={isLoading}>
+          {isLoading ? "Signing in..." : "Sign In"}
+        </Button>
+      </Box>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          paddingTop: "1rem",
+        }}
+      >
+        <Button variant="contained">Sign in with google</Button>
+      </Box>
     </Box>
   );
 };
