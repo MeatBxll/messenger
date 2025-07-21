@@ -8,21 +8,27 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  name     String
-  email    String @unique
-  password String
-  pfpIndex Int
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  password    String?
+  pfpIndex    Int
 
-  friends  User[] @relation("UserFriends")
-  friendOf User[] @relation("UserFriends")
+  provider    String?
+  providerId  String?
+
+  friends     User[]   @relation("UserFriends")
+  friendOf    User[]   @relation("UserFriends")
 
   sentRequests     FriendRequest[] @relation("SentRequests")
   receivedRequests FriendRequest[] @relation("ReceivedRequests")
 
   sentMessages     Message[] @relation("SentMessages")
   receivedMessages Message[] @relation("ReceivedMessages")
+
+  @@unique([provider, providerId])
 }
+
 
 model Message {
   id        Int      @id @default(autoincrement())

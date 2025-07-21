@@ -26,6 +26,7 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     failureRedirect: "http://localhost:5173/login",
+    session: false,
   }),
   signInWithGoogle
 );

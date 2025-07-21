@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import http from "http";
 import { Server as SocketIOServer } from "socket.io";
@@ -56,7 +59,7 @@ app.use(cookieParser());
 //passport.js middleware
 app.use(
   session({
-    secret: "your-session-secret", // Replace with env var later
+    secret: process.env.SESSION_SECRET!,
     resave: false,
     saveUninitialized: false,
     cookie: {
