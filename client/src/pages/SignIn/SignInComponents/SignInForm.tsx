@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials, logout as logoutAction } from "../../../api/authSlice";
 import { apiSlice } from "../../../api/apiSlice";
+import { GoogleLoginButton } from "./GoogleLoginButton";
 
 export const SignInForm = () => {
   interface ApiError {
@@ -119,7 +120,7 @@ export const SignInForm = () => {
           paddingTop: "1rem",
         }}
       >
-        <Button variant="contained">Sign in with google</Button>
+        <GoogleLoginButton />
       </Box>
     </Box>
   );

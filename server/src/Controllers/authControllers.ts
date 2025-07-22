@@ -183,13 +183,17 @@ export const signInWithGoogle = async (req: Request, res: Response) => {
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
 
-  return res.json({
-    message: "logged in",
-    accessToken,
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-    },
-  });
+  res.send(`
+    <script>
+      window.opener.postMessage(${JSON.stringify({
+        accessToken,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      })}, "http://localhost:5173");
+      window.close();
+    </script>
+  `);
 };
